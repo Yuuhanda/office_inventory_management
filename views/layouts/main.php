@@ -171,7 +171,7 @@ $this->registerLinkTag(['rel' => 'icon', 'type' => 'image/x-icon', 'href' => Yii
 <br>
     <!-- Footer -->
     <footer class="main-footer">
-        <strong>&copy; Fikri A. Yuhanda - Prabubima Tech 2024 || Office Inventory Management Yii2 <?= date('Y') ?></strong>
+        <strong>&copy; Fikri A. Yuhanda 2024 || Office Inventory Management Yii2 <?= date('Y') ?></strong>
     </footer>
 </div>
 <?php 

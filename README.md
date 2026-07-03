@@ -51,7 +51,14 @@ If you dont already have a mymemory account, you can create one here: https://my
 create a new API key and add it to config/params.php
 add your email into components/MyMemoryService.php
 
+
+
 IMPORTANT FOR WEBVIMARK RBAC
 -------------
 Do not make any change to any file in the vendor/webvimark as many parts of the code has been changed to fit in specific needs.
+
+SUPERADMIN USER
+-------------
+USERNAME : superadmin
+PASSWORD : password
 

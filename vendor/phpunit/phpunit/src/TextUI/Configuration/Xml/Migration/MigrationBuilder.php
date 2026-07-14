@@ -40,7 +40,7 @@ final readonly class MigrationBuilder
             ConvertLogTypes::class,
         ],
 
-        '9.5' => [
+        '9.6' => [
             RemoveListeners::class,
             RemoveTestSuiteLoaderAttributes::class,
             RemoveCacheResultFileAttribute::class,
@@ -64,6 +64,10 @@ final readonly class MigrationBuilder
             MoveCoverageDirectoriesToSource::class,
         ],
 
+        '10.4' => [
+            RemoveBeStrictAboutTodoAnnotatedTestsAttribute::class,
+        ],
+
         '10.5' => [
             RemoveRegisterMockObjectsFromTestArgumentsRecursivelyAttribute::class,
         ],
@@ -77,8 +81,8 @@ final readonly class MigrationBuilder
             RemoveCoverageElementCacheDirectoryAttribute::class,
         ],
 
-        '11.4' => [
-            RemoveCoverageElementIncludeUncoveredFilesAttribute::class,
+        '11.2' => [
+            RemoveBeStrictAboutTodoAnnotatedTestsAttribute::class,
         ],
     ];
 

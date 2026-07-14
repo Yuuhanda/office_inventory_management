@@ -23,7 +23,7 @@ use yii\di\Instance;
  * The following example shows how you can configure the application to use CacheSession:
  * Add the following to your application config under `components`:
  *
- * ```php
+ * ```
  * 'session' => [
  *     'class' => 'yii\web\CacheSession',
  *     // 'cache' => 'mycache',
@@ -92,7 +92,7 @@ class CacheSession extends Session
      * Session read handler.
      * @internal Do not call this method directly.
      * @param string $id session ID
-     * @return string the session data
+     * @return string|false the session data, or false on failure
      */
     public function readSession($id)
     {

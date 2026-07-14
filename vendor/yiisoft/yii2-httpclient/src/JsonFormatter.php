@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -20,7 +21,7 @@ class JsonFormatter extends BaseObject implements FormatterInterface
 {
     /**
      * @var int the encoding options. For more details please refer to
-     * <http://www.php.net/manual/en/function.json-encode.php>.
+     * <https://www.php.net/manual/en/function.json-encode.php>.
      */
     public $encodeOptions = 0;
 

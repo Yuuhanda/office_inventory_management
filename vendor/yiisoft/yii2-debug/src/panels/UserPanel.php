@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -22,10 +23,12 @@ use yii\helpers\ArrayHelper;
 use yii\helpers\VarDumper;
 use yii\web\IdentityInterface;
 use yii\web\User;
+use yii\di\Instance;
 
 /**
  * Debugger panel that collects and displays user data.
  *
+ * @property-read User|null $user
  * @property-read DataProviderInterface $userDataProvider
  * @property-read Model|UserSearchInterface $usersFilterModel
  *
@@ -40,7 +43,7 @@ class UserPanel extends Panel
      * Settable: allow, roles, ips, matchCallback, denyCallback.
      * By default deny for everyone. Recommendation: can allow for administrator
      * or developer (if implement) role: ['allow' => true, 'roles' => ['admin']]
-     * @see http://www.yiiframework.com/doc-2.0/guide-security-authorization.html
+     * @see https://www.yiiframework.com/doc-2.0/guide-security-authorization.html
      * @since 2.0.10
      */
     public $ruleUserSwitch = [
@@ -58,7 +61,7 @@ class UserPanel extends Panel
     public $filterModel;
     /**
      * @var array allowed columns for GridView.
-     * @see http://www.yiiframework.com/doc-2.0/yii-grid-gridview.html#$columns-detail
+     * @see https://www.yiiframework.com/doc-2.0/yii-grid-gridview.html#$columns-detail
      * @since 2.0.10
      */
     public $filterColumns = [];
@@ -87,11 +90,12 @@ class UserPanel extends Panel
         $this->userSwitch = new UserSwitch(['userComponent' => $this->userComponent]);
         $this->addAccessRules();
 
-        if (is_string($this->filterModel)
+        if (
+            is_string($this->filterModel)
             && class_exists($this->filterModel)
             && in_array('yii\debug\models\search\UserSearchInterface', class_implements($this->filterModel), true)
         ) {
-            $this->filterModel = new $this->filterModel;
+            $this->filterModel = new $this->filterModel();
         } elseif ($this->getUser() && $this->getUser()->identityClass) {
             if (is_subclass_of($this->getUser()->identityClass, 'yii\db\ActiveRecord')) {
                 $this->filterModel = new \yii\debug\models\search\User();
@@ -235,7 +239,7 @@ class UserPanel extends Panel
         $permissionsProvider = null;
 
         try {
-            $authManager = Yii::$app->getAuthManager();
+            $authManager = Instance::ensure($this->module->authManager, '\yii\rbac\BaseManager');
 
             if ($authManager instanceof \yii\rbac\ManagerInterface) {
                 $roles = ArrayHelper::toArray($authManager->getRolesByUser($this->getUser()->id));

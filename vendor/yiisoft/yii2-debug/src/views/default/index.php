@@ -17,7 +17,7 @@ $this->title = 'Yii Debugger';
     <div id="yii-debug-toolbar" class="yii-debug-toolbar yii-debug-toolbar_position_top" style="display: none;">
         <div class="yii-debug-toolbar__bar">
             <div class="yii-debug-toolbar__block yii-debug-toolbar__title">
-                <a href="#">
+                <a href="<?= Url::to(['index']) ?>">
                     <img width="30" height="30" alt="" src="<?= \yii\debug\Module::getYiiLogo() ?>">
                 </a>
             </div>
@@ -79,8 +79,7 @@ $this->title = 'Yii Debugger';
                     [
                         'attribute' => 'time',
                         'value' => function ($data) {
-                            return '<span class="nowrap">' . Yii::$app->formatter->asDatetime($data['time'],
-                                    'yyyy-MM-dd HH:mm:ss') . '</span>';
+                            return '<span class="nowrap">' . Yii::$app->formatter->asDatetime($data['time'], 'yyyy-MM-dd HH:mm:ss') . '</span>';
                         },
                         'format' => 'html',
                     ],
@@ -124,7 +123,7 @@ $this->title = 'Yii Debugger';
                                 $content .= ' <span title="' . $warning . '">&#x26a0;</span>';
                             }
 
-                            return '<a href="' . Url::to(['view', 'panel' => 'db', 'tag' => $data['tag']]) .'"
+                            return '<a href="' . Url::to(['view', 'panel' => 'db', 'tag' => $data['tag']]) . '"
                                         title="' . $title . '">' . $content . '</a>';
                         },
                         'format' => 'raw',

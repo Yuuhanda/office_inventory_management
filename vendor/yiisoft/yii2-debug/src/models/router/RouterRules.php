@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -95,7 +96,7 @@ class RouterRules extends Model
                     case WebUrlRule::CREATION_ONLY:
                         $mode = 'creation only';
                         break;
-                    case null;
+                    case null:
                         $mode = null;
                         break;
                     default:
@@ -142,7 +143,11 @@ class RouterRules extends Model
     {
         $reflectionClass = new \ReflectionClass($restRule);
         $reflectionProperty = $reflectionClass->getProperty('rules');
-        $reflectionProperty->setAccessible(true);
+
+        if (PHP_VERSION_ID < 80100) {
+            $reflectionProperty->setAccessible(true);
+        }
+
         $rulesGroups = $reflectionProperty->getValue($restRule);
 
         foreach ($rulesGroups as $rules) {

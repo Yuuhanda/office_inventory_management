@@ -4,19 +4,16 @@ declare(strict_types=1);
 
 namespace Codeception\Util\Shared;
 
-use PHPUnit\Framework\Assert;
+use Codeception\PHPUnit\TestCase;
+use PHPUnit\Framework\Assert as PHPUnitAssert;
 use PHPUnit\Framework\Constraint\Constraint as PHPUnitConstraint;
 use PHPUnit\Framework\Constraint\LogicalNot;
-use ReflectionClass;
 
 trait Asserts
 {
     use InheritedAsserts;
 
-    /**
-     * @param array{0: string} $arguments
-     */
-    protected function assert(array $arguments, bool $not = false): void
+    protected function assert(array $arguments, bool $not = false)
     {
         $not = $not ? 'Not' : '';
         $method = ucfirst(array_shift($arguments));
@@ -30,21 +27,10 @@ trait Asserts
             $not = '';
         }
 
-        $fullMethod = "assert{$not}{$method}";
-
-        $rc = new ReflectionClass(Assert::class);
-        if ($rc->hasMethod($fullMethod) && $rc->getMethod($fullMethod)->isStatic()) {
-            $rc->getMethod($fullMethod)->invokeArgs(null, $arguments);
-        } else {
-            throw new \RuntimeException("Method Assert::{$fullMethod} does not exist");
-        }
+        call_user_func_array([PHPUnitAssert::class, 'assert' . $not . $method], $arguments);
     }
 
-    /**
-     * @param array{0: string} $arguments
-     * @return void
-     */
-    protected function assertNot(array $arguments): void
+    protected function assertNot($arguments)
     {
         $this->assert($arguments, true);
     }
@@ -52,9 +38,9 @@ trait Asserts
     /**
      * Asserts that a file does not exist.
      */
-    protected function assertFileNotExists(string $filename, string $message = ''): void
+    protected function assertFileNotExists(string $filename, string $message = '')
     {
-        Assert::assertFileDoesNotExist($filename, $message);
+        TestCase::assertFileDoesNotExist($filename, $message);
     }
 
     /**
@@ -63,49 +49,56 @@ trait Asserts
      * @param mixed $expected
      * @param mixed $actual
      */
-    protected function assertGreaterOrEquals($expected, $actual, string $message = ''): void
+    protected function assertGreaterOrEquals($expected, $actual, string $message = '')
     {
-        Assert::assertGreaterThanOrEqual($expected, $actual, $message);
+        TestCase::assertGreaterThanOrEqual($expected, $actual, $message);
     }
 
     /**
      * Asserts that a variable is empty.
+     *
+     * @param mixed $actual
      */
-    protected function assertIsEmpty(mixed $actual, string $message = ''): void
+    protected function assertIsEmpty($actual, string $message = '')
     {
-        Assert::assertEmpty($actual, $message);
+        TestCase::assertEmpty($actual, $message);
     }
 
     /**
      * Asserts that a value is smaller than or equal to another value.
+     *
+     * @param mixed $expected
+     * @param mixed $actual
      */
-    protected function assertLessOrEquals(mixed $expected, mixed $actual, string $message = ''): void
+    protected function assertLessOrEquals($expected, $actual, string $message = '')
     {
-        Assert::assertLessThanOrEqual($expected, $actual, $message);
+        TestCase::assertLessThanOrEqual($expected, $actual, $message);
     }
 
     /**
      * Asserts that a string does not match a given regular expression.
      */
-    protected function assertNotRegExp(string $pattern, string $string, string $message = ''): void
+    protected function assertNotRegExp(string $pattern, string $string, string $message = '')
     {
-        Assert::assertDoesNotMatchRegularExpression($pattern, $string, $message);
+        TestCase::assertDoesNotMatchRegularExpression($pattern, $string, $message);
     }
 
     /**
      * Asserts that a string matches a given regular expression.
      */
-    protected function assertRegExp(string $pattern, string $string, string $message = ''): void
+    protected function assertRegExp(string $pattern, string $string, string $message = '')
     {
-        Assert::assertMatchesRegularExpression($pattern, $string, $message);
+        TestCase::assertMatchesRegularExpression($pattern, $string, $message);
     }
 
     /**
      * Evaluates a PHPUnit\Framework\Constraint matcher object.
+     *
+     * @param mixed $value
      */
-    protected function assertThatItsNot(mixed $value, PHPUnitConstraint $constraint, string $message = ''): void
+    protected function assertThatItsNot($value, PHPUnitConstraint $constraint, string $message = '')
     {
         $constraint = new LogicalNot($constraint);
-        Assert::assertThat($value, $constraint, $message);
+        TestCase::assertThat($value, $constraint, $message);
     }
 }

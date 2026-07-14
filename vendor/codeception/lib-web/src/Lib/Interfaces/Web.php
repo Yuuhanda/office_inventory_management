@@ -345,28 +345,30 @@ interface Web
     public function seeInCurrentUrl(string $uri): void;
 
     /**
-     * Checks that the current URL (path) is equal to the given string.
+     * Checks that the current URL is equal to the given string.
+     * Unlike `seeInCurrentUrl`, this only matches the full URL.
      *
      * ```php
      * <?php
-     * // to match the home page
+     * // to match root url
      * $I->seeCurrentUrlEquals('/');
      * ```
      */
     public function seeCurrentUrlEquals(string $uri): void;
 
     /**
-     * Checks that the current URL (path) matches the given regular expression.
+     * Checks that the current URL matches the given regular expression.
      *
      * ```php
      * <?php
-     * $I->seeCurrentUrlMatches('~^/users/\d+$~');
+     * // to match root url
+     * $I->seeCurrentUrlMatches('~^/users/(\d+)~');
      * ```
      */
     public function seeCurrentUrlMatches(string $uri): void;
 
     /**
-     * Checks that the current URI (path) doesn't contain the given string.
+     * Checks that the current URI doesn't contain the given string.
      *
      * ```php
      * <?php
@@ -376,7 +378,7 @@ interface Web
     public function dontSeeInCurrentUrl(string $uri): void;
 
     /**
-     * Checks that the current URL (path) doesn't equal the given string.
+     * Checks that the current URL doesn't equal the given string.
      * Unlike `dontSeeInCurrentUrl`, this only matches the full URL.
      *
      * ```php
@@ -388,12 +390,12 @@ interface Web
     public function dontSeeCurrentUrlEquals(string $uri): void;
 
     /**
-     * Checks that current URL (path) doesn't match the given regular expression.
+     * Checks that current url doesn't match the given regular expression.
      *
      * ```php
      * <?php
      * // to match root url
-     * $I->dontSeeCurrentUrlMatches('~^/users/\d+$~');
+     * $I->dontSeeCurrentUrlMatches('~^/users/(\d+)~');
      * ```
      */
     public function dontSeeCurrentUrlMatches(string $uri): void;
@@ -517,9 +519,9 @@ interface Web
      *      'checkbox1' => true,
      *      // ...
      * ];
-     * $I->submitForm('//form[@id=my-form]', $form, 'submitButton');
+     * $I->submitForm('//form[@id=my-form]', string $form, 'submitButton');
      * // $I->amOnPage('/path/to/form-page') may be needed
-     * $I->seeInFormFields('//form[@id=my-form]', $form);
+     * $I->seeInFormFields('//form[@id=my-form]', string $form);
      * ```
      */
     public function seeInFormFields($formSelector, array $params): void;

@@ -13,7 +13,6 @@ namespace Psy;
 
 use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
 
@@ -22,15 +21,15 @@ use Symfony\Component\Console\Question\ConfirmationQuestion;
  */
 class ProjectTrust
 {
-    private string $mode = Configuration::PROJECT_TRUST_PROMPT;
-    private bool $forceTrust = false;
-    private bool $forceUntrust = false;
-    private bool $warnedUntrustedAutoload = false;
+    private $mode = Configuration::PROJECT_TRUST_PROMPT;
+    private $forceTrust = false;
+    private $forceUntrust = false;
+    private $warnedUntrustedAutoload = false;
 
     /** @var string[] Project roots trusted for this session only (when persistence fails) */
-    private array $sessionTrustedRoots = [];
+    private $sessionTrustedRoots = [];
 
-    private ConfigPaths $configPaths;
+    private $configPaths;
 
     public function __construct(ConfigPaths $configPaths)
     {
@@ -50,7 +49,7 @@ class ProjectTrust
      *
      * Accepts one of: 'prompt', 'always', 'never'.
      */
-    public function setMode(string $mode): void
+    public function setMode(string $mode)
     {
         $this->mode = $mode;
     }
@@ -62,7 +61,7 @@ class ProjectTrust
      *
      * @throws \InvalidArgumentException for invalid values
      */
-    public function setModeFromEnv(string $value): void
+    public function setModeFromEnv(string $value)
     {
         switch (\strtolower(\trim($value))) {
             case 'true':
@@ -81,7 +80,7 @@ class ProjectTrust
     /**
      * Set force trust for this run.
      */
-    public function setForceTrust(bool $force = true): void
+    public function setForceTrust(bool $force = true)
     {
         $this->forceTrust = $force;
         if ($force) {
@@ -100,7 +99,7 @@ class ProjectTrust
     /**
      * Set force untrust for this run.
      */
-    public function setForceUntrust(bool $force = true): void
+    public function setForceUntrust(bool $force = true)
     {
         $this->forceUntrust = $force;
         if ($force) {
@@ -121,7 +120,7 @@ class ProjectTrust
      *
      * @return bool|null true if trusted, false if untrusted, null if should prompt
      */
-    public function getProjectTrustStatus(string $projectRoot): ?bool
+    public function getProjectTrustStatus(string $projectRoot)
     {
         if ($this->forceUntrust || $this->mode === Configuration::PROJECT_TRUST_NEVER) {
             return false;
@@ -170,7 +169,7 @@ class ProjectTrust
      *
      * Falls back to session-only trust with a warning if persistence fails.
      */
-    public function trustProjectRoot(string $root, ?OutputInterface $output = null): bool
+    public function trustProjectRoot(string $root, OutputInterface $output = null): bool
     {
         $root = $this->normalizeProjectRoot($root);
         $trustedRoots = $this->getTrustedProjectRoots();
@@ -193,9 +192,9 @@ class ProjectTrust
     /**
      * Display a trust persistence failure warning.
      */
-    public function warnTrustPersistenceFailed(string $root, OutputInterface $output): void
+    public function warnTrustPersistenceFailed(string $root, OutputInterface $output)
     {
-        if ($output instanceof ConsoleOutput) {
+        if ($output instanceof \Symfony\Component\Console\Output\ConsoleOutput) {
             $output = $output->getErrorOutput();
         }
 
@@ -208,14 +207,14 @@ class ProjectTrust
     /**
      * Display a warning about untrusted autoload warming.
      */
-    public function warnUntrustedAutoloadWarming(string $projectRoot, OutputInterface $output): void
+    public function warnUntrustedAutoloadWarming(string $projectRoot, OutputInterface $output)
     {
         if ($this->warnedUntrustedAutoload) {
             return;
         }
 
         $this->warnedUntrustedAutoload = true;
-        if ($output instanceof ConsoleOutput) {
+        if ($output instanceof \Symfony\Component\Console\Output\ConsoleOutput) {
             $output = $output->getErrorOutput();
         }
 
@@ -274,7 +273,7 @@ class ProjectTrust
     /**
      * Get the project root for trust decisions (walks up to find composer.json).
      */
-    public function getProjectRoot(): ?string
+    public function getProjectRoot()
     {
         $root = $this->configPaths->projectRoot();
         if ($root === null) {
@@ -287,7 +286,7 @@ class ProjectTrust
     /**
      * Get the local config root (cwd only, no ancestor walking).
      */
-    public function getLocalConfigRoot(): ?string
+    public function getLocalConfigRoot()
     {
         $root = $this->configPaths->localConfigRoot();
         if ($root === null) {
@@ -326,7 +325,7 @@ class ProjectTrust
      * Looks for psy/psysh in composer.json name or composer.lock packages,
      * and falls back to the PSYSH_UNTRUSTED_PROJECT env var.
      */
-    public function getLocalPsyshProjectRoot(string $projectRoot): ?string
+    public function getLocalPsyshProjectRoot(string $projectRoot)
     {
         $composerJson = $projectRoot.'/composer.json';
         if (@\is_file($composerJson)) {
@@ -355,37 +354,8 @@ class ProjectTrust
             }
         }
 
-        if (($untrustedProjectRoot = $this->getUntrustedProjectRootHint()) !== null) {
-            return $this->normalizeProjectRoot($untrustedProjectRoot);
-        }
-
-        return null;
-    }
-
-    /**
-     * Only prompt about local PsySH binaries when a launcher detected one.
-     */
-    public function shouldPromptForLocalPsyshBinary(): bool
-    {
-        return $this->getUntrustedProjectRootHint() !== null;
-    }
-
-    /**
-     * Get untrusted project root hint from environment, if present.
-     */
-    private function getUntrustedProjectRootHint(): ?string
-    {
-        if (isset($_SERVER['PSYSH_UNTRUSTED_PROJECT'])
-            && \is_string($_SERVER['PSYSH_UNTRUSTED_PROJECT'])
-            && $_SERVER['PSYSH_UNTRUSTED_PROJECT'] !== ''
-        ) {
-            return $_SERVER['PSYSH_UNTRUSTED_PROJECT'];
-        }
-
-        $env = \getenv('PSYSH_UNTRUSTED_PROJECT');
-
-        if (\is_string($env) && $env !== '') {
-            return $env;
+        if (isset($_SERVER['PSYSH_UNTRUSTED_PROJECT']) && $_SERVER['PSYSH_UNTRUSTED_PROJECT']) {
+            return $this->normalizeProjectRoot($_SERVER['PSYSH_UNTRUSTED_PROJECT']);
         }
 
         return null;
@@ -447,7 +417,7 @@ class ProjectTrust
     /**
      * Get the path to the trusted projects file.
      */
-    public function getProjectTrustFilePath(): ?string
+    public function getProjectTrustFilePath()
     {
         $configDir = $this->configPaths->currentConfigDir();
         if ($configDir === null) {

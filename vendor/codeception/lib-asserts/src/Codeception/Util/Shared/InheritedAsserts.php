@@ -4,384 +4,132 @@ declare(strict_types=1);
 
 namespace Codeception\Util\Shared;
 
-use ArrayAccess;
+use Codeception\PHPUnit\TestCase;
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\Constraint\Constraint as PHPUnitConstraint;
 use PHPUnit\Framework\Constraint\LogicalNot;
 use PHPUnit\Framework\Constraint\StringMatchesFormatDescription;
-use ReflectionClass;
-use ReflectionException;
 
 trait InheritedAsserts
 {
     /**
      * Asserts that an array has a specified key.
-     * @param array<mixed>|ArrayAccess<mixed, mixed> $array
+     *
+     * @param int|string $key
+     * @param array|\ArrayAccess $array
      */
-    protected function assertArrayHasKey(int|string $key, array|ArrayAccess $array, string $message = ''): void
+    protected function assertArrayHasKey($key, $array, string $message = '')
     {
         Assert::assertArrayHasKey($key, $array, $message);
     }
 
     /**
      * Asserts that an array does not have a specified key.
-     * @param array<mixed>|ArrayAccess<mixed, mixed> $array
+     *
+     * @param int|string $key
+     * @param array|\ArrayAccess $array
      */
-    protected function assertArrayNotHasKey(int|string $key, array|\ArrayAccess $array, string $message = ''): void
+    protected function assertArrayNotHasKey($key, $array, string $message = '')
     {
         Assert::assertArrayNotHasKey($key, $array, $message);
     }
 
     /**
      * Asserts that a class has a specified attribute.
-     * @param class-string $className
      */
-    protected function assertClassHasAttribute(string $attributeName, string $className, string $message = ''): void
+    protected function assertClassHasAttribute(string $attributeName, string $className, string $message = '')
     {
         trigger_error(__FUNCTION__ . ' was removed from PHPUnit since PHPUnit 10', E_USER_DEPRECATED);
-        Assert::assertTrue(property_exists($className, $attributeName), $message);
+
+        if (method_exists(Assert::class, 'assertClassHasAttribute')) {
+            Assert::assertClassHasAttribute($attributeName, $className, $message);
+        } else {
+            Assert::assertTrue(property_exists($className, $attributeName), $message);
+        }
     }
 
     /**
      * Asserts that a class has a specified static attribute.
-     * @param class-string $className
      */
-    protected function assertClassHasStaticAttribute(string $attributeName, string $className, string $message = ''): void
+    protected function assertClassHasStaticAttribute(string $attributeName, string $className, string $message = '')
     {
         trigger_error(__FUNCTION__ . ' was removed from PHPUnit since PHPUnit 10', E_USER_DEPRECATED);
 
-        Assert::assertTrue(self::hasStaticAttribute($attributeName, $className), $message);
+        if (method_exists(Assert::class, 'assertClassHasStaticAttribute')) {
+            Assert::assertClassHasStaticAttribute($attributeName, $className, $message);
+        } else {
+            Assert::assertTrue(self::hasStaticAttribute($attributeName, $className), $message);
+        }
     }
 
     /**
      * Asserts that a class does not have a specified attribute.
-     * @param class-string $className
      */
-    protected function assertClassNotHasAttribute(string $attributeName, string $className, string $message = ''): void
+    protected function assertClassNotHasAttribute(string $attributeName, string $className, string $message = '')
     {
         trigger_error(__FUNCTION__ . ' was removed from PHPUnit since PHPUnit 10', E_USER_DEPRECATED);
-        Assert::assertFalse(property_exists($className, $attributeName), $message);
+
+        if (method_exists(Assert::class, 'assertClassNotHasAttribute')) {
+            Assert::assertClassNotHasAttribute($attributeName, $className, $message);
+        } else {
+            Assert::assertFalse(property_exists($className, $attributeName), $message);
+        }
     }
 
     /**
      * Asserts that a class does not have a specified static attribute.
-     * @param class-string $className
      */
-    protected function assertClassNotHasStaticAttribute(string $attributeName, string $className, string $message = ''): void
+    protected function assertClassNotHasStaticAttribute(string $attributeName, string $className, string $message = '')
     {
         trigger_error(__FUNCTION__ . ' was removed from PHPUnit since PHPUnit 10', E_USER_DEPRECATED);
-        Assert::assertFalse(self::hasStaticAttribute($attributeName, $className), $message);
+
+        if (method_exists(Assert::class, 'assertClassNotHasStaticAttribute')) {
+            Assert::assertClassNotHasStaticAttribute($attributeName, $className, $message);
+        } else {
+            Assert::assertFalse(self::hasStaticAttribute($attributeName, $className), $message);
+        }
     }
 
     /**
      * Asserts that a haystack contains a needle.
      *
-     * @param iterable<mixed> $haystack
+     * @param mixed $needle
      */
-    protected function assertContains(mixed $needle, iterable $haystack, string $message = ''): void
+    protected function assertContains($needle, iterable $haystack, string $message = '')
     {
         Assert::assertContains($needle, $haystack, $message);
     }
 
     /**
-     * @param iterable<mixed> $haystack
+     * @param mixed $needle
      */
-    protected function assertContainsEquals(mixed $needle, iterable $haystack, string $message = ''): void
+    protected function assertContainsEquals($needle, iterable $haystack, string $message = '')
     {
         Assert::assertContainsEquals($needle, $haystack, $message);
     }
 
     /**
-     * @param iterable<mixed> $haystack
-     */
-    protected function assertNotContainsEquals(mixed $needle, iterable $haystack, string $message = ''): void
-    {
-        Assert::assertNotContainsEquals($needle, $haystack, $message);
-    }
-
-    /**
-     * @param iterable<mixed> $haystack
-     */
-    protected function assertContainsNotOnlyArray(iterable $haystack, string $message = ''): void
-    {
-        Assert::assertContainsNotOnlyArray($haystack, $message);
-    }
-
-    /**
-     * @param iterable<mixed> $haystack
-     */
-    protected function assertContainsNotOnlyBool(iterable $haystack, string $message = ''): void
-    {
-        Assert::assertContainsNotOnlyBool($haystack, $message);
-    }
-
-    /**
-     * @param iterable<mixed> $haystack
-     */
-    protected function assertContainsNotOnlyCallable(iterable $haystack, string $message = ''): void
-    {
-        Assert::assertContainsNotOnlyCallable($haystack, $message);
-    }
-
-    /**
-     * @param iterable<mixed> $haystack
-     */
-    protected function assertContainsNotOnlyFloat(iterable $haystack, string $message = ''): void
-    {
-        Assert::assertContainsNotOnlyFloat($haystack, $message);
-    }
-
-    /**
-     * @param class-string $className
-     * @param iterable<mixed> $haystack
-     */
-    protected function assertContainsNotOnlyInstancesOf(string $className, iterable $haystack, string $message = ''): void
-    {
-        Assert::assertContainsNotOnlyInstancesOf($className, $haystack, $message);
-    }
-
-    /**
-     * @param iterable<mixed> $haystack
-     */
-    protected function assertContainsNotOnlyInt(iterable $haystack, string $message = ''): void
-    {
-        Assert::assertContainsNotOnlyInt($haystack, $message);
-    }
-
-    /**
-     * @param iterable<mixed> $haystack
-     */
-    protected function assertContainsNotOnlyIterable(iterable $haystack, string $message = ''): void
-    {
-        Assert::assertContainsNotOnlyIterable($haystack, $message);
-    }
-
-    /**
-     * @param iterable<mixed> $haystack
-     */
-    protected function assertContainsNotOnlyNull(iterable $haystack, string $message = ''): void
-    {
-        Assert::assertContainsNotOnlyNull($haystack, $message);
-    }
-
-    /**
-     * @param iterable<mixed> $haystack
-     */
-    protected function assertContainsNotOnlyNumeric(iterable $haystack, string $message = ''): void
-    {
-        Assert::assertContainsNotOnlyNumeric($haystack, $message);
-    }
-
-    /**
-     * @param iterable<mixed> $haystack
-     */
-    protected function assertContainsNotOnlyObject(iterable $haystack, string $message = ''): void
-    {
-        Assert::assertContainsNotOnlyObject($haystack, $message);
-    }
-
-    /**
-     * @param iterable<mixed> $haystack
-     */
-    protected function assertContainsNotOnlyResource(iterable $haystack, string $message = ''): void
-    {
-        Assert::assertContainsNotOnlyResource($haystack, $message);
-    }
-
-    /**
-     * @param iterable<mixed> $haystack
-     */
-    protected function assertContainsNotOnlyClosedResource(iterable $haystack, string $message = ''): void
-    {
-        Assert::assertContainsNotOnlyClosedResource($haystack, $message);
-    }
-
-    /**
-     * @param iterable<mixed> $haystack
-     */
-    protected function assertContainsNotOnlyScalar(iterable $haystack, string $message = ''): void
-    {
-        Assert::assertContainsNotOnlyScalar($haystack, $message);
-    }
-
-    /**
-     * @param iterable<mixed> $haystack
-     */
-    protected function assertContainsNotOnlyString(iterable $haystack, string $message = ''): void
-    {
-        Assert::assertContainsNotOnlyString($haystack, $message);
-    }
-
-    /**
      * Asserts that a haystack contains only values of a given type.
-     * @param 'array'|'bool'|'boolean'|'callable'|'double'|'float'|'int'|'integer'|'iterable'|'null'|'numeric'|'object'|'real'|'resource'|'resource (closed)'|'scalar'|'string'|class-string $type
-     * @param iterable<mixed> $haystack
      */
-    protected function assertContainsOnly(string $type, iterable $haystack, ?bool $isNativeType = null, string $message = ''): void
+    protected function assertContainsOnly(string $type, iterable $haystack, ?bool $isNativeType = null, string $message = '')
     {
-        $replacement = match ($type) {
-            'array' => 'assertContainsOnlyArray',
-            'bool', 'boolean' => 'assertContainsOnlyBool',
-            'callable' => 'assertContainsOnlyCallable',
-            'double', 'float', 'real' => 'assertContainsOnlyFloat',
-            'int', 'integer' => 'assertContainsOnlyInt',
-            'iterable' => 'assertContainsOnlyIterable',
-            'null' => 'assertContainsOnlyNull',
-            'numeric' => 'assertContainsOnlyNumeric',
-            'object' => 'assertContainsOnlyObject',
-            'resource' => 'assertContainsOnlyResource',
-            'resource (closed)' => 'assertContainsOnlyClosedResource',
-            'scalar' => 'assertContainsOnlyScalar',
-            'string' => 'assertContainsOnlyString',
-            default => null,
-        };
-
-        if (is_string($replacement)) {
-            trigger_error(
-                sprintf(
-                    '%s is deprecated since PHPUnit 11.5. Please use %s($haystack) instead of assertContainsOnly(\'%s\', $haystack)',
-                    __FUNCTION__,
-                    $replacement,
-                    $type,
-                ),
-                E_USER_DEPRECATED,
-            );
-
-            $this->$replacement($haystack, $message);
-        } else {
-            trigger_error(
-                sprintf(
-                    'assertContainsOnly() is deprecated since PHPUnit 11.5. Please use assertContainsOnlyInstancesOf(\'%s\', $haystack) instead of assertContainsOnly(\'%s\', $haystack).',
-                    $type,
-                    $type,
-                ),
-                E_USER_DEPRECATED,
-            );
-
-            Assert::assertContainsOnlyInstancesOf($type, $haystack, $message);
-        }
+        Assert::assertContainsOnly($type, $haystack, $isNativeType, $message);
     }
 
     /**
      * Asserts that a haystack contains only instances of a given class name.
-     * @param class-string $className
-     * @param iterable<mixed> $haystack
      */
-    protected function assertContainsOnlyInstancesOf(string $className, iterable $haystack, string $message = ''): void
+    protected function assertContainsOnlyInstancesOf(string $className, iterable $haystack, string $message = '')
     {
         Assert::assertContainsOnlyInstancesOf($className, $haystack, $message);
     }
 
     /**
-     * @param iterable<mixed> $haystack
-     */
-    protected function assertContainsOnlyArray(iterable $haystack, string $message = ''): void
-    {
-        Assert::assertContainsOnlyArray($haystack, $message);
-    }
-
-    /**
-     * @param iterable<mixed> $haystack
-     */
-    protected function assertContainsOnlyBool(iterable $haystack, string $message = ''): void
-    {
-        Assert::assertContainsOnlyBool($haystack, $message);
-    }
-
-    /**
-     * @param iterable<mixed> $haystack
-     */
-    protected function assertContainsOnlyCallable(iterable $haystack, string $message = ''): void
-    {
-        Assert::assertContainsOnlyCallable($haystack, $message);
-    }
-
-    /**
-     * @param iterable<mixed> $haystack
-     */
-    protected function assertContainsOnlyFloat(iterable $haystack, string $message = ''): void
-    {
-        Assert::assertContainsOnlyFloat($haystack, $message);
-    }
-
-    /**
-     * @param iterable<mixed> $haystack
-     */
-    protected function assertContainsOnlyInt(iterable $haystack, string $message = ''): void
-    {
-        Assert::assertContainsOnlyInt($haystack, $message);
-    }
-
-    /**
-     * @param iterable<mixed> $haystack
-     */
-    protected function assertContainsOnlyIterable(iterable $haystack, string $message = ''): void
-    {
-        Assert::assertContainsOnlyIterable($haystack, $message);
-    }
-
-    /**
-     * @param iterable<mixed> $haystack
-     */
-    protected function assertContainsOnlyNull(iterable $haystack, string $message = ''): void
-    {
-        Assert::assertContainsOnlyNull($haystack, $message);
-    }
-
-    /**
-     * @param iterable<mixed> $haystack
-     */
-    protected function assertContainsOnlyNumeric(iterable $haystack, string $message = ''): void
-    {
-        Assert::assertContainsOnlyNumeric($haystack, $message);
-    }
-
-    /**
-     * @param iterable<mixed> $haystack
-     */
-    protected function assertContainsOnlyObject(iterable $haystack, string $message = ''): void
-    {
-        Assert::assertContainsOnlyObject($haystack, $message);
-    }
-
-    /**
-     * @param iterable<mixed> $haystack
-     */
-    protected function assertContainsOnlyResource(iterable $haystack, string $message = ''): void
-    {
-        Assert::assertContainsOnlyResource($haystack, $message);
-    }
-
-    /**
-     * @param iterable<mixed> $haystack
-     */
-    protected function assertContainsOnlyClosedResource(iterable $haystack, string $message = ''): void
-    {
-        Assert::assertContainsOnlyClosedResource($haystack, $message);
-    }
-
-    /**
-     * @param iterable<mixed> $haystack
-     */
-    protected function assertContainsOnlyScalar(iterable $haystack, string $message = ''): void
-    {
-        Assert::assertContainsOnlyScalar($haystack, $message);
-    }
-
-    /**
-     * @param iterable<mixed> $haystack
-     */
-    protected function assertContainsOnlyString(iterable $haystack, string $message = ''): void
-    {
-        Assert::assertContainsOnlyString($haystack, $message);
-    }
-
-    /**
      * Asserts the number of elements of an array, Countable or Traversable.
      *
-     * @param \Countable|iterable<mixed> $haystack
+     * @param \Countable|iterable $haystack
      */
-    protected function assertCount(int $expectedCount, \Countable|iterable $haystack, string $message = ''): void
+    protected function assertCount(int $expectedCount, $haystack, string $message = '')
     {
         Assert::assertCount($expectedCount, $haystack, $message);
     }
@@ -389,7 +137,7 @@ trait InheritedAsserts
     /**
      * Asserts that a directory does not exist.
      */
-    protected function assertDirectoryDoesNotExist(string $directory, string $message = ''): void
+    protected function assertDirectoryDoesNotExist(string $directory, string $message = '')
     {
         Assert::assertDirectoryDoesNotExist($directory, $message);
     }
@@ -397,7 +145,7 @@ trait InheritedAsserts
     /**
      * Asserts that a directory exists.
      */
-    protected function assertDirectoryExists(string $directory, string $message = ''): void
+    protected function assertDirectoryExists(string $directory, string $message = '')
     {
         Assert::assertDirectoryExists($directory, $message);
     }
@@ -405,7 +153,7 @@ trait InheritedAsserts
     /**
      * Asserts that a directory exists and is not readable.
      */
-    protected function assertDirectoryIsNotReadable(string $directory, string $message = ''): void
+    protected function assertDirectoryIsNotReadable(string $directory, string $message = '')
     {
         Assert::assertDirectoryIsNotReadable($directory, $message);
     }
@@ -413,7 +161,7 @@ trait InheritedAsserts
     /**
      * Asserts that a directory exists and is not writable.
      */
-    protected function assertDirectoryIsNotWritable(string $directory, string $message = ''): void
+    protected function assertDirectoryIsNotWritable(string $directory, string $message = '')
     {
         Assert::assertDirectoryIsNotWritable($directory, $message);
     }
@@ -421,7 +169,7 @@ trait InheritedAsserts
     /**
      * Asserts that a directory exists and is readable.
      */
-    protected function assertDirectoryIsReadable(string $directory, string $message = ''): void
+    protected function assertDirectoryIsReadable(string $directory, string $message = '')
     {
         Assert::assertDirectoryIsReadable($directory, $message);
     }
@@ -429,7 +177,7 @@ trait InheritedAsserts
     /**
      * Asserts that a directory exists and is writable.
      */
-    protected function assertDirectoryIsWritable(string $directory, string $message = ''): void
+    protected function assertDirectoryIsWritable(string $directory, string $message = '')
     {
         Assert::assertDirectoryIsWritable($directory, $message);
     }
@@ -437,9 +185,9 @@ trait InheritedAsserts
     /**
      * Asserts that a string does not match a given regular expression.
      */
-    protected function assertDoesNotMatchRegularExpression(string $pattern, string $string, string $message = ''): void
+    protected function assertDoesNotMatchRegularExpression(string $pattern, string $string, string $message = '')
     {
-        Assert::assertDoesNotMatchRegularExpression($pattern, $string, $message);
+        TestCase::assertDoesNotMatchRegularExpression($pattern, $string, $message);
     }
 
     /**
@@ -449,7 +197,7 @@ trait InheritedAsserts
      *
      * @phpstan-assert empty $actual
      */
-    protected function assertEmpty($actual, string $message = ''): void
+    protected function assertEmpty($actual, string $message = '')
     {
         Assert::assertEmpty($actual, $message);
     }
@@ -460,7 +208,7 @@ trait InheritedAsserts
      * @param mixed $expected
      * @param mixed $actual
      */
-    protected function assertEquals($expected, $actual, string $message = ''): void
+    protected function assertEquals($expected, $actual, string $message = '')
     {
         Assert::assertEquals($expected, $actual, $message);
     }
@@ -471,9 +219,9 @@ trait InheritedAsserts
      * @param mixed $expected
      * @param mixed $actual
      */
-    protected function assertEqualsCanonicalizing($expected, $actual, string $message = ''): void
+    protected function assertEqualsCanonicalizing($expected, $actual, string $message = '')
     {
-        Assert::assertEqualsCanonicalizing($expected, $actual, $message);
+        TestCase::assertEqualsCanonicalizing($expected, $actual, $message);
     }
 
     /**
@@ -482,9 +230,9 @@ trait InheritedAsserts
      * @param mixed $expected
      * @param mixed $actual
      */
-    protected function assertEqualsIgnoringCase($expected, $actual, string $message = ''): void
+    protected function assertEqualsIgnoringCase($expected, $actual, string $message = '')
     {
-        Assert::assertEqualsIgnoringCase($expected, $actual, $message);
+        TestCase::assertEqualsIgnoringCase($expected, $actual, $message);
     }
 
     /**
@@ -493,9 +241,9 @@ trait InheritedAsserts
      * @param mixed $expected
      * @param mixed $actual
      */
-    protected function assertEqualsWithDelta($expected, $actual, float $delta, string $message = ''): void
+    protected function assertEqualsWithDelta($expected, $actual, float $delta, string $message = '')
     {
-        Assert::assertEqualsWithDelta($expected, $actual, $delta, $message);
+        TestCase::assertEqualsWithDelta($expected, $actual, $delta, $message);
     }
 
     /**
@@ -505,7 +253,7 @@ trait InheritedAsserts
      *
      * @phpstan-assert false $condition
      */
-    protected function assertFalse($condition, string $message = ''): void
+    protected function assertFalse($condition, string $message = '')
     {
         Assert::assertFalse($condition, $message);
     }
@@ -513,15 +261,15 @@ trait InheritedAsserts
     /**
      * Asserts that a file does not exist.
      */
-    protected function assertFileDoesNotExist(string $filename, string $message = ''): void
+    protected function assertFileDoesNotExist(string $filename, string $message = '')
     {
-        Assert::assertFileDoesNotExist($filename, $message);
+        TestCase::assertFileDoesNotExist($filename, $message);
     }
 
     /**
      * Asserts that the contents of one file is equal to the contents of another file.
      */
-    protected function assertFileEquals(string $expected, string $actual, string $message = ''): void
+    protected function assertFileEquals(string $expected, string $actual, string $message = '')
     {
         Assert::assertFileEquals($expected, $actual, $message);
     }
@@ -529,7 +277,7 @@ trait InheritedAsserts
     /**
      * Asserts that the contents of one file is equal to the contents of another file (canonicalizing).
      */
-    protected function assertFileEqualsCanonicalizing(string $expected, string $actual, string $message = ''): void
+    protected function assertFileEqualsCanonicalizing(string $expected, string $actual, string $message = '')
     {
         Assert::assertFileEqualsCanonicalizing($expected, $actual, $message);
     }
@@ -537,7 +285,7 @@ trait InheritedAsserts
     /**
      * Asserts that the contents of one file is equal to the contents of another file (ignoring case).
      */
-    protected function assertFileEqualsIgnoringCase(string $expected, string $actual, string $message = ''): void
+    protected function assertFileEqualsIgnoringCase(string $expected, string $actual, string $message = '')
     {
         Assert::assertFileEqualsIgnoringCase($expected, $actual, $message);
     }
@@ -545,7 +293,7 @@ trait InheritedAsserts
     /**
      * Asserts that a file exists.
      */
-    protected function assertFileExists(string $filename, string $message = ''): void
+    protected function assertFileExists(string $filename, string $message = '')
     {
         Assert::assertFileExists($filename, $message);
     }
@@ -553,7 +301,7 @@ trait InheritedAsserts
     /**
      * Asserts that a file exists and is not readable.
      */
-    protected function assertFileIsNotReadable(string $file, string $message = ''): void
+    protected function assertFileIsNotReadable(string $file, string $message = '')
     {
         Assert::assertFileIsNotReadable($file, $message);
     }
@@ -561,7 +309,7 @@ trait InheritedAsserts
     /**
      * Asserts that a file exists and is not writable.
      */
-    protected function assertFileIsNotWritable(string $file, string $message = ''): void
+    protected function assertFileIsNotWritable(string $file, string $message = '')
     {
         Assert::assertFileIsNotWritable($file, $message);
     }
@@ -569,7 +317,7 @@ trait InheritedAsserts
     /**
      * Asserts that a file exists and is readable.
      */
-    protected function assertFileIsReadable(string $file, string $message = ''): void
+    protected function assertFileIsReadable(string $file, string $message = '')
     {
         Assert::assertFileIsReadable($file, $message);
     }
@@ -577,7 +325,7 @@ trait InheritedAsserts
     /**
      * Asserts that a file exists and is writable.
      */
-    protected function assertFileIsWritable(string $file, string $message = ''): void
+    protected function assertFileIsWritable(string $file, string $message = '')
     {
         Assert::assertFileIsWritable($file, $message);
     }
@@ -585,7 +333,7 @@ trait InheritedAsserts
     /**
      * Asserts that the contents of one file is not equal to the contents of another file.
      */
-    protected function assertFileNotEquals(string $expected, string $actual, string $message = ''): void
+    protected function assertFileNotEquals(string $expected, string $actual, string $message = '')
     {
         Assert::assertFileNotEquals($expected, $actual, $message);
     }
@@ -593,7 +341,7 @@ trait InheritedAsserts
     /**
      * Asserts that the contents of one file is not equal to the contents of another file (canonicalizing).
      */
-    protected function assertFileNotEqualsCanonicalizing(string $expected, string $actual, string $message = ''): void
+    protected function assertFileNotEqualsCanonicalizing(string $expected, string $actual, string $message = '')
     {
         Assert::assertFileNotEqualsCanonicalizing($expected, $actual, $message);
     }
@@ -601,7 +349,7 @@ trait InheritedAsserts
     /**
      * Asserts that the contents of one file is not equal to the contents of another file (ignoring case).
      */
-    protected function assertFileNotEqualsIgnoringCase(string $expected, string $actual, string $message = ''): void
+    protected function assertFileNotEqualsIgnoringCase(string $expected, string $actual, string $message = '')
     {
         Assert::assertFileNotEqualsIgnoringCase($expected, $actual, $message);
     }
@@ -611,7 +359,7 @@ trait InheritedAsserts
      *
      * @param mixed $actual
      */
-    protected function assertFinite($actual, string $message = ''): void
+    protected function assertFinite($actual, string $message = '')
     {
         Assert::assertFinite($actual, $message);
     }
@@ -622,7 +370,7 @@ trait InheritedAsserts
      * @param mixed $expected
      * @param mixed $actual
      */
-    protected function assertGreaterThan($expected, $actual, string $message = ''): void
+    protected function assertGreaterThan($expected, $actual, string $message = '')
     {
         Assert::assertGreaterThan($expected, $actual, $message);
     }
@@ -633,7 +381,7 @@ trait InheritedAsserts
      * @param mixed $expected
      * @param mixed $actual
      */
-    protected function assertGreaterThanOrEqual($expected, $actual, string $message = ''): void
+    protected function assertGreaterThanOrEqual($expected, $actual, string $message = '')
     {
         Assert::assertGreaterThanOrEqual($expected, $actual, $message);
     }
@@ -643,7 +391,7 @@ trait InheritedAsserts
      *
      * @param mixed $actual
      */
-    protected function assertInfinite($actual, string $message = ''): void
+    protected function assertInfinite($actual, string $message = '')
     {
         Assert::assertInfinite($actual, $message);
     }
@@ -658,7 +406,7 @@ trait InheritedAsserts
      *
      * @phpstan-assert =ExpectedType $actual
      */
-    protected function assertInstanceOf(string $expected, $actual, string $message = ''): void
+    protected function assertInstanceOf(string $expected, $actual, string $message = '')
     {
         Assert::assertInstanceOf($expected, $actual, $message);
     }
@@ -667,11 +415,12 @@ trait InheritedAsserts
      * Asserts that a variable is of type array.
      *
      * @param mixed $actual
-     * @phpstan-assert array<mixed> $actual
+     *
+     * @phpstan-assert array $actual
      */
-    protected function assertIsArray($actual, string $message = ''): void
+    protected function assertIsArray($actual, string $message = '')
     {
-        Assert::assertIsArray($actual, $message);
+        TestCase::assertIsArray($actual, $message);
     }
 
     /**
@@ -681,9 +430,9 @@ trait InheritedAsserts
      *
      * @phpstan-assert bool $actual
      */
-    protected function assertIsBool($actual, string $message = ''): void
+    protected function assertIsBool($actual, string $message = '')
     {
-        Assert::assertIsBool($actual, $message);
+        TestCase::assertIsBool($actual, $message);
     }
 
     /**
@@ -693,9 +442,9 @@ trait InheritedAsserts
      *
      * @phpstan-assert callable $actual
      */
-    protected function assertIsCallable($actual, string $message = ''): void
+    protected function assertIsCallable($actual, string $message = '')
     {
-        Assert::assertIsCallable($actual, $message);
+        TestCase::assertIsCallable($actual, $message);
     }
 
     /**
@@ -705,9 +454,9 @@ trait InheritedAsserts
      *
      * @phpstan-assert resource $actual
      */
-    protected function assertIsClosedResource($actual, string $message = ''): void
+    protected function assertIsClosedResource($actual, string $message = '')
     {
-        Assert::assertIsClosedResource($actual, $message);
+        TestCase::assertIsClosedResource($actual, $message);
     }
 
     /**
@@ -717,9 +466,9 @@ trait InheritedAsserts
      *
      * @phpstan-assert float $actual
      */
-    protected function assertIsFloat($actual, string $message = ''): void
+    protected function assertIsFloat($actual, string $message = '')
     {
-        Assert::assertIsFloat($actual, $message);
+        TestCase::assertIsFloat($actual, $message);
     }
 
     /**
@@ -729,9 +478,9 @@ trait InheritedAsserts
      *
      * @phpstan-assert int $actual
      */
-    protected function assertIsInt($actual, string $message = ''): void
+    protected function assertIsInt($actual, string $message = '')
     {
-        Assert::assertIsInt($actual, $message);
+        TestCase::assertIsInt($actual, $message);
     }
 
     /**
@@ -739,11 +488,11 @@ trait InheritedAsserts
      *
      * @param mixed $actual
      *
-     * @phpstan-assert iterable<mixed> $actual
+     * @phpstan-assert iterable $actual
      */
-    protected function assertIsIterable($actual, string $message = ''): void
+    protected function assertIsIterable($actual, string $message = '')
     {
-        Assert::assertIsIterable($actual, $message);
+        TestCase::assertIsIterable($actual, $message);
     }
 
     /**
@@ -751,11 +500,11 @@ trait InheritedAsserts
      *
      * @param mixed $actual
      *
-     * @phpstan-assert !array<mixed> $actual
+     * @phpstan-assert !array $actual
      */
-    protected function assertIsNotArray($actual, string $message = ''): void
+    protected function assertIsNotArray($actual, string $message = '')
     {
-        Assert::assertIsNotArray($actual, $message);
+        TestCase::assertIsNotArray($actual, $message);
     }
 
     /**
@@ -765,9 +514,9 @@ trait InheritedAsserts
      *
      * @phpstan-assert !bool $actual
      */
-    protected function assertIsNotBool($actual, string $message = ''): void
+    protected function assertIsNotBool($actual, string $message = '')
     {
-        Assert::assertIsNotBool($actual, $message);
+        TestCase::assertIsNotBool($actual, $message);
     }
 
     /**
@@ -777,9 +526,9 @@ trait InheritedAsserts
      *
      * @phpstan-assert !callable $actual
      */
-    protected function assertIsNotCallable($actual, string $message = ''): void
+    protected function assertIsNotCallable($actual, string $message = '')
     {
-        Assert::assertIsNotCallable($actual, $message);
+        TestCase::assertIsNotCallable($actual, $message);
     }
 
     /**
@@ -789,9 +538,9 @@ trait InheritedAsserts
      *
      * @phpstan-assert !resource $actual
      */
-    protected function assertIsNotClosedResource($actual, string $message = ''): void
+    protected function assertIsNotClosedResource($actual, string $message = '')
     {
-        Assert::assertIsNotClosedResource($actual, $message);
+        TestCase::assertIsNotClosedResource($actual, $message);
     }
 
     /**
@@ -801,9 +550,9 @@ trait InheritedAsserts
      *
      * @phpstan-assert !float $actual
      */
-    protected function assertIsNotFloat($actual, string $message = ''): void
+    protected function assertIsNotFloat($actual, string $message = '')
     {
-        Assert::assertIsNotFloat($actual, $message);
+        TestCase::assertIsNotFloat($actual, $message);
     }
 
     /**
@@ -813,9 +562,9 @@ trait InheritedAsserts
      *
      * @phpstan-assert !int $actual
      */
-    protected function assertIsNotInt($actual, string $message = ''): void
+    protected function assertIsNotInt($actual, string $message = '')
     {
-        Assert::assertIsNotInt($actual, $message);
+        TestCase::assertIsNotInt($actual, $message);
     }
 
     /**
@@ -823,11 +572,11 @@ trait InheritedAsserts
      *
      * @param mixed $actual
      *
-     * @phpstan-assert !iterable<mixed> $actual
+     * @phpstan-assert !iterable $actual
      */
-    protected function assertIsNotIterable($actual, string $message = ''): void
+    protected function assertIsNotIterable($actual, string $message = '')
     {
-        Assert::assertIsNotIterable($actual, $message);
+        TestCase::assertIsNotIterable($actual, $message);
     }
 
     /**
@@ -837,9 +586,9 @@ trait InheritedAsserts
      *
      * @phpstan-assert !numeric $actual
      */
-    protected function assertIsNotNumeric($actual, string $message = ''): void
+    protected function assertIsNotNumeric($actual, string $message = '')
     {
-        Assert::assertIsNotNumeric($actual, $message);
+        TestCase::assertIsNotNumeric($actual, $message);
     }
 
     /**
@@ -849,17 +598,17 @@ trait InheritedAsserts
      *
      * @phpstan-assert !object $actual
      */
-    protected function assertIsNotObject($actual, string $message = ''): void
+    protected function assertIsNotObject($actual, string $message = '')
     {
-        Assert::assertIsNotObject($actual, $message);
+        TestCase::assertIsNotObject($actual, $message);
     }
 
     /**
      * Asserts that a file/dir exists and is not readable.
      */
-    protected function assertIsNotReadable(string $filename, string $message = ''): void
+    protected function assertIsNotReadable(string $filename, string $message = '')
     {
-        Assert::assertIsNotReadable($filename, $message);
+        TestCase::assertIsNotReadable($filename, $message);
     }
 
     /**
@@ -869,9 +618,9 @@ trait InheritedAsserts
      *
      * @phpstan-assert !resource $actual
      */
-    protected function assertIsNotResource($actual, string $message = ''): void
+    protected function assertIsNotResource($actual, string $message = '')
     {
-        Assert::assertIsNotResource($actual, $message);
+        TestCase::assertIsNotResource($actual, $message);
     }
 
     /**
@@ -881,9 +630,9 @@ trait InheritedAsserts
      *
      * @psalm-assert !scalar $actual
      */
-    protected function assertIsNotScalar($actual, string $message = ''): void
+    protected function assertIsNotScalar($actual, string $message = '')
     {
-        Assert::assertIsNotScalar($actual, $message);
+        TestCase::assertIsNotScalar($actual, $message);
     }
 
     /**
@@ -893,17 +642,17 @@ trait InheritedAsserts
      *
      * @phpstan-assert !string $actual
      */
-    protected function assertIsNotString($actual, string $message = ''): void
+    protected function assertIsNotString($actual, string $message = '')
     {
-        Assert::assertIsNotString($actual, $message);
+        TestCase::assertIsNotString($actual, $message);
     }
 
     /**
      * Asserts that a file/dir exists and is not writable.
      */
-    protected function assertIsNotWritable(string $filename, string $message = ''): void
+    protected function assertIsNotWritable(string $filename, string $message = '')
     {
-        Assert::assertIsNotWritable($filename, $message);
+        TestCase::assertIsNotWritable($filename, $message);
     }
 
     /**
@@ -913,9 +662,9 @@ trait InheritedAsserts
      *
      * @phpstan-assert numeric $actual
      */
-    protected function assertIsNumeric($actual, string $message = ''): void
+    protected function assertIsNumeric($actual, string $message = '')
     {
-        Assert::assertIsNumeric($actual, $message);
+        TestCase::assertIsNumeric($actual, $message);
     }
 
     /**
@@ -925,17 +674,17 @@ trait InheritedAsserts
      *
      * @phpstan-assert object $actual
      */
-    protected function assertIsObject($actual, string $message = ''): void
+    protected function assertIsObject($actual, string $message = '')
     {
-        Assert::assertIsObject($actual, $message);
+        TestCase::assertIsObject($actual, $message);
     }
 
     /**
      * Asserts that a file/dir is readable.
      */
-    protected function assertIsReadable(string $filename, string $message = ''): void
+    protected function assertIsReadable(string $filename, string $message = '')
     {
-        Assert::assertIsReadable($filename, $message);
+        TestCase::assertIsReadable($filename, $message);
     }
 
     /**
@@ -945,9 +694,9 @@ trait InheritedAsserts
      *
      * @phpstan-assert resource $actual
      */
-    protected function assertIsResource($actual, string $message = ''): void
+    protected function assertIsResource($actual, string $message = '')
     {
-        Assert::assertIsResource($actual, $message);
+        TestCase::assertIsResource($actual, $message);
     }
 
     /**
@@ -957,9 +706,9 @@ trait InheritedAsserts
      *
      * @phpstan-assert scalar $actual
      */
-    protected function assertIsScalar($actual, string $message = ''): void
+    protected function assertIsScalar($actual, string $message = '')
     {
-        Assert::assertIsScalar($actual, $message);
+        TestCase::assertIsScalar($actual, $message);
     }
 
     /**
@@ -969,23 +718,23 @@ trait InheritedAsserts
      *
      * @phpstan-assert string $actual
      */
-    protected function assertIsString($actual, string $message = ''): void
+    protected function assertIsString($actual, string $message = '')
     {
-        Assert::assertIsString($actual, $message);
+        TestCase::assertIsString($actual, $message);
     }
 
     /**
      * Asserts that a file/dir exists and is writable.
      */
-    protected function assertIsWritable(string $filename, string $message = ''): void
+    protected function assertIsWritable(string $filename, string $message = '')
     {
-        Assert::assertIsWritable($filename, $message);
+        TestCase::assertIsWritable($filename, $message);
     }
 
     /**
      * Asserts that a string is a valid JSON string.
      */
-    protected function assertJson(string $actualJson, string $message = ''): void
+    protected function assertJson(string $actualJson, string $message = '')
     {
         Assert::assertJson($actualJson, $message);
     }
@@ -993,7 +742,7 @@ trait InheritedAsserts
     /**
      * Asserts that two JSON files are equal.
      */
-    protected function assertJsonFileEqualsJsonFile(string $expectedFile, string $actualFile, string $message = ''): void
+    protected function assertJsonFileEqualsJsonFile(string $expectedFile, string $actualFile, string $message = '')
     {
         Assert::assertJsonFileEqualsJsonFile($expectedFile, $actualFile, $message);
     }
@@ -1001,7 +750,7 @@ trait InheritedAsserts
     /**
      * Asserts that two JSON files are not equal.
      */
-    protected function assertJsonFileNotEqualsJsonFile(string $expectedFile, string $actualFile, string $message = ''): void
+    protected function assertJsonFileNotEqualsJsonFile(string $expectedFile, string $actualFile, string $message = '')
     {
         Assert::assertJsonFileNotEqualsJsonFile($expectedFile, $actualFile, $message);
     }
@@ -1009,7 +758,7 @@ trait InheritedAsserts
     /**
      * Asserts that the generated JSON encoded object and the content of the given file are equal.
      */
-    protected function assertJsonStringEqualsJsonFile(string $expectedFile, string $actualJson, string $message = ''): void
+    protected function assertJsonStringEqualsJsonFile(string $expectedFile, string $actualJson, string $message = '')
     {
         Assert::assertJsonStringEqualsJsonFile($expectedFile, $actualJson, $message);
     }
@@ -1017,7 +766,7 @@ trait InheritedAsserts
     /**
      * Asserts that two given JSON encoded objects or arrays are equal.
      */
-    protected function assertJsonStringEqualsJsonString(string $expectedJson, string $actualJson, string $message = ''): void
+    protected function assertJsonStringEqualsJsonString(string $expectedJson, string $actualJson, string $message = '')
     {
         Assert::assertJsonStringEqualsJsonString($expectedJson, $actualJson, $message);
     }
@@ -1025,7 +774,7 @@ trait InheritedAsserts
     /**
      * Asserts that the generated JSON encoded object and the content of the given file are not equal.
      */
-    protected function assertJsonStringNotEqualsJsonFile(string $expectedFile, string $actualJson, string $message = ''): void
+    protected function assertJsonStringNotEqualsJsonFile(string $expectedFile, string $actualJson, string $message = '')
     {
         Assert::assertJsonStringNotEqualsJsonFile($expectedFile, $actualJson, $message);
     }
@@ -1033,7 +782,7 @@ trait InheritedAsserts
     /**
      * Asserts that two given JSON encoded objects or arrays are not equal.
      */
-    protected function assertJsonStringNotEqualsJsonString(string $expectedJson, string $actualJson, string $message = ''): void
+    protected function assertJsonStringNotEqualsJsonString(string $expectedJson, string $actualJson, string $message = '')
     {
         Assert::assertJsonStringNotEqualsJsonString($expectedJson, $actualJson, $message);
     }
@@ -1044,7 +793,7 @@ trait InheritedAsserts
      * @param mixed $expected
      * @param mixed $actual
      */
-    protected function assertLessThan($expected, $actual, string $message = ''): void
+    protected function assertLessThan($expected, $actual, string $message = '')
     {
         Assert::assertLessThan($expected, $actual, $message);
     }
@@ -1055,7 +804,7 @@ trait InheritedAsserts
      * @param mixed $expected
      * @param mixed $actual
      */
-    protected function assertLessThanOrEqual($expected, $actual, string $message = ''): void
+    protected function assertLessThanOrEqual($expected, $actual, string $message = '')
     {
         Assert::assertLessThanOrEqual($expected, $actual, $message);
     }
@@ -1063,9 +812,9 @@ trait InheritedAsserts
     /**
      * Asserts that a string matches a given regular expression.
      */
-    protected function assertMatchesRegularExpression(string $pattern, string $string, string $message = ''): void
+    protected function assertMatchesRegularExpression(string $pattern, string $string, string $message = '')
     {
-        Assert::assertMatchesRegularExpression($pattern, $string, $message);
+        TestCase::assertMatchesRegularExpression($pattern, $string, $message);
     }
 
     /**
@@ -1073,7 +822,7 @@ trait InheritedAsserts
      *
      * @param mixed $actual
      */
-    protected function assertNan($actual, string $message = ''): void
+    protected function assertNan($actual, string $message = '')
     {
         Assert::assertNan($actual, $message);
     }
@@ -1081,69 +830,32 @@ trait InheritedAsserts
     /**
      * Asserts that a haystack does not contain a needle.
      *
-     * @param iterable<mixed> $haystack
+     * @param mixed $needle
      */
-    protected function assertNotContains(mixed $needle, iterable $haystack, string $message = ''): void
+    protected function assertNotContains($needle, iterable $haystack, string $message = '')
     {
         Assert::assertNotContains($needle, $haystack, $message);
     }
 
+    protected function assertNotContainsEquals($needle, iterable $haystack, string $message = '')
+    {
+        Assert::assertNotContainsEquals($needle, $haystack, $message);
+    }
+
     /**
      * Asserts that a haystack does not contain only values of a given type.
-     * @param 'array'|'bool'|'boolean'|'callable'|'double'|'float'|'int'|'integer'|'iterable'|'null'|'numeric'|'object'|'real'|'resource'|'resource (closed)'|'scalar'|'string'|class-string $type
-     * @param iterable<mixed> $haystack
      */
-    protected function assertNotContainsOnly(string $type, iterable $haystack, ?bool $isNativeType = null, string $message = ''): void
+    protected function assertNotContainsOnly(string $type, iterable $haystack, ?bool $isNativeType = null, string $message = '')
     {
-        $replacement = match ($type) {
-            'array' => 'assertContainsNotOnlyArray',
-            'bool', 'boolean' => 'assertContainsNotOnlyBool',
-            'callable' => 'assertContainsNotOnlyCallable',
-            'double', 'float', 'real' => 'assertContainsNotOnlyFloat',
-            'int', 'integer' => 'assertContainsNotOnlyInt',
-            'iterable' => 'assertContainsNotOnlyIterable',
-            'null' => 'assertContainsNotOnlyNull',
-            'numeric' => 'assertContainsNotOnlyNumeric',
-            'object' => 'assertContainsNotOnlyObject',
-            'resource' => 'assertContainsNotOnlyResource',
-            'resource (closed)' => 'assertContainsNotOnlyClosedResource',
-            'scalar' => 'assertContainsNotOnlyScalar',
-            'string' => 'assertContainsNotOnlyString',
-            default => null,
-        };
-
-        if (is_string($replacement)) {
-            trigger_error(
-                sprintf(
-                    '%s is deprecated since PHPUnit 11.5. Please use %s($haystack) instead of assertContainsNotOnly(\'%s\', $haystack)',
-                    __FUNCTION__,
-                    $replacement,
-                    $type,
-                ),
-                E_USER_DEPRECATED,
-            );
-
-            $this->$replacement($haystack, $message);
-        } else {
-            trigger_error(
-                sprintf(
-                    'assertNotContainsOnly() is deprecated since PHPUnit 11.5. Please use assertContainsNotOnlyInstancesOf(\'%s\', $haystack) instead of assertNotContainsOnly(\'%s\', $haystack).',
-                    $type,
-                    $type,
-                ),
-                E_USER_DEPRECATED,
-            );
-
-            Assert::assertContainsNotOnlyInstancesOf($type, $haystack, $message);
-        }
+        Assert::assertNotContainsOnly($type, $haystack, $isNativeType, $message);
     }
-    
+
     /**
      * Asserts the number of elements of an array, Countable or Traversable.
      *
-     * @param \Countable|iterable<mixed> $haystack
+     * @param \Countable|iterable $haystack
      */
-    protected function assertNotCount(int $expectedCount, \Countable|iterable $haystack, string $message = ''): void
+    protected function assertNotCount(int $expectedCount, $haystack, string $message = '')
     {
         Assert::assertNotCount($expectedCount, $haystack, $message);
     }
@@ -1155,7 +867,7 @@ trait InheritedAsserts
      *
      * @phpstan-assert !empty $actual
      */
-    protected function assertNotEmpty($actual, string $message = ''): void
+    protected function assertNotEmpty($actual, string $message = '')
     {
         Assert::assertNotEmpty($actual, $message);
     }
@@ -1166,9 +878,9 @@ trait InheritedAsserts
      * @param mixed $expected
      * @param mixed $actual
      */
-    protected function assertNotEquals($expected, $actual, string $message = ''): void
+    protected function assertNotEquals($expected, $actual, string $message = '')
     {
-        Assert::assertNotEquals($expected, $actual, $message);
+        TestCase::assertNotEquals($expected, $actual, $message);
     }
 
     /**
@@ -1177,9 +889,9 @@ trait InheritedAsserts
      * @param mixed $expected
      * @param mixed $actual
      */
-    protected function assertNotEqualsCanonicalizing($expected, $actual, string $message = ''): void
+    protected function assertNotEqualsCanonicalizing($expected, $actual, string $message = '')
     {
-        Assert::assertNotEqualsCanonicalizing($expected, $actual, $message);
+        TestCase::assertNotEqualsCanonicalizing($expected, $actual, $message);
     }
 
     /**
@@ -1188,9 +900,9 @@ trait InheritedAsserts
      * @param mixed $expected
      * @param mixed $actual
      */
-    protected function assertNotEqualsIgnoringCase($expected, $actual, string $message = ''): void
+    protected function assertNotEqualsIgnoringCase($expected, $actual, string $message = '')
     {
-        Assert::assertNotEqualsIgnoringCase($expected, $actual, $message);
+        TestCase::assertNotEqualsIgnoringCase($expected, $actual, $message);
     }
 
     /**
@@ -1199,9 +911,9 @@ trait InheritedAsserts
      * @param mixed $expected
      * @param mixed $actual
      */
-    protected function assertNotEqualsWithDelta($expected, $actual, float $delta, string $message = ''): void
+    protected function assertNotEqualsWithDelta($expected, $actual, float $delta, string $message = '')
     {
-        Assert::assertNotEqualsWithDelta($expected, $actual, $delta, $message);
+        TestCase::assertNotEqualsWithDelta($expected, $actual, $delta, $message);
     }
 
     /**
@@ -1211,7 +923,7 @@ trait InheritedAsserts
      *
      * @phpstan-assert !false $condition
      */
-    protected function assertNotFalse($condition, string $message = ''): void
+    protected function assertNotFalse($condition, string $message = '')
     {
         Assert::assertNotFalse($condition, $message);
     }
@@ -1226,7 +938,7 @@ trait InheritedAsserts
      *
      * @phpstan-assert !ExpectedType $actual
      */
-    protected function assertNotInstanceOf(string $expected, $actual, string $message = ''): void
+    protected function assertNotInstanceOf(string $expected, $actual, string $message = '')
     {
         Assert::assertNotInstanceOf($expected, $actual, $message);
     }
@@ -1238,7 +950,7 @@ trait InheritedAsserts
      *
      * @phpstan-assert !null $actual
      */
-    protected function assertNotNull($actual, string $message = ''): void
+    protected function assertNotNull($actual, string $message = '')
     {
         Assert::assertNotNull($actual, $message);
     }
@@ -1249,7 +961,7 @@ trait InheritedAsserts
      * @param mixed $expected
      * @param mixed $actual
      */
-    protected function assertNotSame($expected, $actual, string $message = ''): void
+    protected function assertNotSame($expected, $actual, string $message = '')
     {
         Assert::assertNotSame($expected, $actual, $message);
     }
@@ -1257,10 +969,10 @@ trait InheritedAsserts
     /**
      * Assert that the size of two arrays (or `Countable` or `Traversable` objects) is not the same.
      *
-     * @param \Countable|iterable<mixed> $expected
-     * @param \Countable|iterable<mixed> $actual
+     * @param \Countable|iterable $expected
+     * @param \Countable|iterable $actual
      */
-    protected function assertNotSameSize(\Countable|iterable $expected, \Countable|iterable $actual, string $message = ''): void
+    protected function assertNotSameSize($expected, $actual, string $message = '')
     {
         Assert::assertNotSameSize($expected, $actual, $message);
     }
@@ -1272,7 +984,7 @@ trait InheritedAsserts
      *
      * @phpstan-assert !true $condition
      */
-    protected function assertNotTrue($condition, string $message = ''): void
+    protected function assertNotTrue($condition, string $message = '')
     {
         Assert::assertNotTrue($condition, $message);
     }
@@ -1284,7 +996,7 @@ trait InheritedAsserts
      *
      * @phpstan-assert null $actual
      */
-    protected function assertNull($actual, string $message = ''): void
+    protected function assertNull($actual, string $message = '')
     {
         Assert::assertNull($actual, $message);
     }
@@ -1292,7 +1004,7 @@ trait InheritedAsserts
     /**
      * Asserts that an object has a specified attribute.
      */
-    protected function assertObjectHasAttribute(string $attributeName, object $object, string $message = ''): void
+    protected function assertObjectHasAttribute(string $attributeName, object $object, string $message = '')
     {
         trigger_error(__FUNCTION__ . ' was removed from PHPUnit since PHPUnit 10', E_USER_DEPRECATED);
 
@@ -1306,7 +1018,7 @@ trait InheritedAsserts
     /**
      * Asserts that an object does not have a specified attribute.
      */
-    protected function assertObjectNotHasAttribute(string $attributeName, object $object, string $message = ''): void
+    protected function assertObjectNotHasAttribute(string $attributeName, object $object, string $message = '')
     {
         trigger_error(__FUNCTION__ . ' was removed from PHPUnit since PHPUnit 10', E_USER_DEPRECATED);
 
@@ -1325,56 +1037,56 @@ trait InheritedAsserts
      * @template ExpectedType
      *
      * @param ExpectedType $expected
+     * @param mixed $actual
      *
      * @phpstan-assert =ExpectedType $actual
      */
-    protected function assertSame(mixed $expected, mixed $actual, string $message = ''): void
+    protected function assertSame($expected, $actual, string $message = '')
     {
         Assert::assertSame($expected, $actual, $message);
     }
 
     /**
      * Assert that the size of two arrays (or `Countable` or `Traversable` objects) is the same.
-     * @param \Countable|iterable<mixed> $expected
-     * @param \Countable|iterable<mixed> $actual
+     *
+     * @param \Countable|iterable $expected
+     * @param \Countable|iterable $actual
      */
-    protected function assertSameSize(\Countable|iterable $expected, \Countable|iterable $actual, string $message = ''): void
+    protected function assertSameSize($expected, $actual, string $message = '')
     {
         Assert::assertSameSize($expected, $actual, $message);
     }
 
-    protected function assertStringContainsString(string $needle, string $haystack, string $message = ''): void
+    protected function assertStringContainsString(string $needle, string $haystack, string $message = '')
     {
-        Assert::assertStringContainsString($needle, $haystack, $message);
+        TestCase::assertStringContainsString($needle, $haystack, $message);
     }
 
-    protected function assertStringContainsStringIgnoringCase(string $needle, string $haystack, string $message = ''): void
+    protected function assertStringContainsStringIgnoringCase(string $needle, string $haystack, string $message = '')
     {
-        Assert::assertStringContainsStringIgnoringCase($needle, $haystack, $message);
+        TestCase::assertStringContainsStringIgnoringCase($needle, $haystack, $message);
     }
 
     /**
      * Asserts that a string ends not with a given suffix.
-     * @param non-empty-string $suffix
      */
-    protected function assertStringEndsNotWith(string $suffix, string $string, string $message = ''): void
+    protected function assertStringEndsNotWith(string $suffix, string $string, string $message = '')
     {
-        Assert::assertStringEndsNotWith($suffix, $string, $message);
+        TestCase::assertStringEndsNotWith($suffix, $string, $message);
     }
 
     /**
      * Asserts that a string ends with a given suffix.
-     * @param non-empty-string $suffix
      */
-    protected function assertStringEndsWith(string $suffix, string $string, string $message = ''): void
+    protected function assertStringEndsWith(string $suffix, string $string, string $message = '')
     {
-        Assert::assertStringEndsWith($suffix, $string, $message);
+        TestCase::assertStringEndsWith($suffix, $string, $message);
     }
 
     /**
      * Asserts that the contents of a string is equal to the contents of a file.
      */
-    protected function assertStringEqualsFile(string $expectedFile, string $actualString, string $message = ''): void
+    protected function assertStringEqualsFile(string $expectedFile, string $actualString, string $message = '')
     {
         Assert::assertStringEqualsFile($expectedFile, $actualString, $message);
     }
@@ -1382,7 +1094,7 @@ trait InheritedAsserts
     /**
      * Asserts that the contents of a string is equal to the contents of a file (canonicalizing).
      */
-    protected function assertStringEqualsFileCanonicalizing(string $expectedFile, string $actualString, string $message = ''): void
+    protected function assertStringEqualsFileCanonicalizing(string $expectedFile, string $actualString, string $message = '')
     {
         Assert::assertStringEqualsFileCanonicalizing($expectedFile, $actualString, $message);
     }
@@ -1390,7 +1102,7 @@ trait InheritedAsserts
     /**
      * Asserts that the contents of a string is equal to the contents of a file (ignoring case).
      */
-    protected function assertStringEqualsFileIgnoringCase(string $expectedFile, string $actualString, string $message = ''): void
+    protected function assertStringEqualsFileIgnoringCase(string $expectedFile, string $actualString, string $message = '')
     {
         Assert::assertStringEqualsFileIgnoringCase($expectedFile, $actualString, $message);
     }
@@ -1398,7 +1110,7 @@ trait InheritedAsserts
     /**
      * Asserts that a string matches a given format string.
      */
-    protected function assertStringMatchesFormat(string $format, string $string, string $message = ''): void
+    protected function assertStringMatchesFormat(string $format, string $string, string $message = '')
     {
         Assert::assertStringMatchesFormat($format, $string, $message);
     }
@@ -1406,25 +1118,25 @@ trait InheritedAsserts
     /**
      * Asserts that a string matches a given format file.
      */
-    protected function assertStringMatchesFormatFile(string $formatFile, string $string, string $message = ''): void
+    protected function assertStringMatchesFormatFile(string $formatFile, string $string, string $message = '')
     {
         Assert::assertStringMatchesFormatFile($formatFile, $string, $message);
     }
 
-    protected function assertStringNotContainsString(string $needle, string $haystack, string $message = ''): void
+    protected function assertStringNotContainsString(string $needle, string $haystack, string $message = '')
     {
-        Assert::assertStringNotContainsString($needle, $haystack, $message);
+        TestCase::assertStringNotContainsString($needle, $haystack, $message);
     }
 
-    protected function assertStringNotContainsStringIgnoringCase(string $needle, string $haystack, string $message = ''): void
+    protected function assertStringNotContainsStringIgnoringCase(string $needle, string $haystack, string $message = '')
     {
-        Assert::assertStringNotContainsStringIgnoringCase($needle, $haystack, $message);
+        TestCase::assertStringNotContainsStringIgnoringCase($needle, $haystack, $message);
     }
 
     /**
      * Asserts that the contents of a string is not equal to the contents of a file.
      */
-    protected function assertStringNotEqualsFile(string $expectedFile, string $actualString, string $message = ''): void
+    protected function assertStringNotEqualsFile(string $expectedFile, string $actualString, string $message = '')
     {
         Assert::assertStringNotEqualsFile($expectedFile, $actualString, $message);
     }
@@ -1432,7 +1144,7 @@ trait InheritedAsserts
     /**
      * Asserts that the contents of a string is not equal to the contents of a file (canonicalizing).
      */
-    protected function assertStringNotEqualsFileCanonicalizing(string $expectedFile, string $actualString, string $message = ''): void
+    protected function assertStringNotEqualsFileCanonicalizing(string $expectedFile, string $actualString, string $message = '')
     {
         Assert::assertStringNotEqualsFileCanonicalizing($expectedFile, $actualString, $message);
     }
@@ -1440,7 +1152,7 @@ trait InheritedAsserts
     /**
      * Asserts that the contents of a string is not equal to the contents of a file (ignoring case).
      */
-    protected function assertStringNotEqualsFileIgnoringCase(string $expectedFile, string $actualString, string $message = ''): void
+    protected function assertStringNotEqualsFileIgnoringCase(string $expectedFile, string $actualString, string $message = '')
     {
         Assert::assertStringNotEqualsFileIgnoringCase($expectedFile, $actualString, $message);
     }
@@ -1448,41 +1160,53 @@ trait InheritedAsserts
     /**
      * Asserts that a string does not match a given format string.
      */
-    protected function assertStringNotMatchesFormat(string $format, string $string, string $message = ''): void
+    protected function assertStringNotMatchesFormat(string $format, string $string, string $message = '')
     {
         trigger_error(__FUNCTION__ . ' was removed from PHPUnit since PHPUnit 12', E_USER_DEPRECATED);
-        $constraint = new LogicalNot(new StringMatchesFormatDescription($format));
-        Assert::assertThat($string, $constraint, $message);
+
+        if (method_exists(Assert::class, 'assertStringNotMatchesFormat')) {
+            Assert::assertStringNotMatchesFormat($format, $string, $message);
+        } else {
+            $constraint = new LogicalNot(new StringMatchesFormatDescription($format));
+
+            Assert::assertThat($string, $constraint, $message);
+        }
     }
 
     /**
      * Asserts that a string does not match a given format string.
      */
-    protected function assertStringNotMatchesFormatFile(string $formatFile, string $string, string $message = ''): void
+    protected function assertStringNotMatchesFormatFile(string $formatFile, string $string, string $message = '')
     {
         trigger_error(__FUNCTION__ . ' was removed from PHPUnit since PHPUnit 12', E_USER_DEPRECATED);
-        $content = file_get_contents($formatFile);
-        if ($content === false) {
-            Assert::fail(sprintf('Failed to read format file "%s"', $formatFile));
+
+        if (method_exists(Assert::class, 'assertStringNotMatchesFormatFile')) {
+            Assert::assertStringNotMatchesFormatFile($formatFile, $string, $message);
+        } else {
+            Assert::assertFileExists($formatFile);
+
+            $constraint = new LogicalNot(
+                new StringMatchesFormatDescription(
+                    file_get_contents($formatFile)
+                )
+            );
+
+            Assert::assertThat($string, $constraint, $message);
         }
-        $constraint = new LogicalNot(new StringMatchesFormatDescription($content));
-        Assert::assertThat($string, $constraint, $message);
     }
 
     /**
      * Asserts that a string starts not with a given prefix.
-     * @param non-empty-string $prefix
      */
-    protected function assertStringStartsNotWith(string $prefix, string $string, string $message = ''): void
+    protected function assertStringStartsNotWith(string $prefix, string $string, string $message = '')
     {
         Assert::assertStringStartsNotWith($prefix, $string, $message);
     }
 
     /**
      * Asserts that a string starts with a given prefix.
-     * @param non-empty-string $prefix
      */
-    protected function assertStringStartsWith(string $prefix, string $string, string $message = ''): void
+    protected function assertStringStartsWith(string $prefix, string $string, string $message = '')
     {
         Assert::assertStringStartsWith($prefix, $string, $message);
     }
@@ -1492,7 +1216,7 @@ trait InheritedAsserts
      *
      * @param mixed $value
      */
-    protected function assertThat($value, PHPUnitConstraint $constraint, string $message = ''): void
+    protected function assertThat($value, PHPUnitConstraint $constraint, string $message = '')
     {
         Assert::assertThat($value, $constraint, $message);
     }
@@ -1504,7 +1228,7 @@ trait InheritedAsserts
      *
      * @phpstan-assert true $condition
      */
-    protected function assertTrue($condition, string $message = ''): void
+    protected function assertTrue($condition, string $message = '')
     {
         Assert::assertTrue($condition, $message);
     }
@@ -1512,7 +1236,7 @@ trait InheritedAsserts
     /**
      * Asserts that two XML files are equal.
      */
-    protected function assertXmlFileEqualsXmlFile(string $expectedFile, string $actualFile, string $message = ''): void
+    protected function assertXmlFileEqualsXmlFile(string $expectedFile, string $actualFile, string $message = '')
     {
         Assert::assertXmlFileEqualsXmlFile($expectedFile, $actualFile, $message);
     }
@@ -1520,42 +1244,29 @@ trait InheritedAsserts
     /**
      * Asserts that two XML files are not equal.
      */
-    protected function assertXmlFileNotEqualsXmlFile(string $expectedFile, string $actualFile, string $message = ''): void
+    protected function assertXmlFileNotEqualsXmlFile(string $expectedFile, string $actualFile, string $message = '')
     {
         Assert::assertXmlFileNotEqualsXmlFile($expectedFile, $actualFile, $message);
     }
 
     /**
      * Asserts that two XML documents are equal.
+     *
+     * @param \DOMDocument|string $actualXml
      */
-    protected function assertXmlStringEqualsXmlFile(string $expectedFile, \DOMDocument|string $actualXml, string $message = ''): void
+    protected function assertXmlStringEqualsXmlFile(string $expectedFile, $actualXml, string $message = '')
     {
-        if ($actualXml instanceof \DOMDocument) {
-            $actualXml = $actualXml->saveXML();
-            if ($actualXml === false) {
-                throw new \RuntimeException('Failed to transform XML document to string');
-            }
-        }
         Assert::assertXmlStringEqualsXmlFile($expectedFile, $actualXml, $message);
     }
 
     /**
      * Asserts that two XML documents are equal.
+     *
+     * @param \DOMDocument|string $expectedXml
+     * @param \DOMDocument|string $actualXml
      */
-    protected function assertXmlStringEqualsXmlString(\DOMDocument|string $expectedXml, \DOMDocument|string $actualXml, string $message = ''): void
+    protected function assertXmlStringEqualsXmlString($expectedXml, $actualXml, string $message = '')
     {
-        if ($actualXml instanceof \DOMDocument) {
-            $actualXml = $actualXml->saveXML();
-            if ($actualXml === false) {
-                throw new \RuntimeException('Failed to transform XML document to string');
-            }
-        }
-        if ($expectedXml instanceof \DOMDocument) {
-            $expectedXml = $expectedXml->saveXML();
-            if ($expectedXml === false) {
-                throw new \RuntimeException('Failed to transform XML document to string');
-            }
-        }
         Assert::assertXmlStringEqualsXmlString($expectedXml, $actualXml, $message);
     }
 
@@ -1564,14 +1275,8 @@ trait InheritedAsserts
      *
      * @param \DOMDocument|string $actualXml
      */
-    protected function assertXmlStringNotEqualsXmlFile(string $expectedFile, $actualXml, string $message = ''): void
+    protected function assertXmlStringNotEqualsXmlFile(string $expectedFile, $actualXml, string $message = '')
     {
-        if ($actualXml instanceof \DOMDocument) {
-            $actualXml = $actualXml->saveXML();
-            if ($actualXml === false) {
-                throw new \RuntimeException('Failed to transform XML document to string');
-            }
-        }
         Assert::assertXmlStringNotEqualsXmlFile($expectedFile, $actualXml, $message);
     }
 
@@ -1581,27 +1286,15 @@ trait InheritedAsserts
      * @param \DOMDocument|string $expectedXml
      * @param \DOMDocument|string $actualXml
      */
-    protected function assertXmlStringNotEqualsXmlString($expectedXml, $actualXml, string $message = ''): void
+    protected function assertXmlStringNotEqualsXmlString($expectedXml, $actualXml, string $message = '')
     {
-        if ($actualXml instanceof \DOMDocument) {
-            $actualXml = $actualXml->saveXML();
-            if ($actualXml === false) {
-                throw new \RuntimeException('Failed to transform XML document to string');
-            }
-        }
-        if ($expectedXml instanceof \DOMDocument) {
-            $expectedXml = $expectedXml->saveXML();
-            if ($expectedXml === false) {
-                throw new \RuntimeException('Failed to transform XML document to string');
-            }
-        }
         Assert::assertXmlStringNotEqualsXmlString($expectedXml, $actualXml, $message);
     }
 
     /**
      * Fails a test with the given message.
      */
-    protected function fail(string $message = ''): never
+    protected function fail(string $message = '')
     {
         Assert::fail($message);
     }
@@ -1609,7 +1302,7 @@ trait InheritedAsserts
     /**
      * Mark the test as incomplete.
      */
-    protected function markTestIncomplete(string $message = ''): never
+    protected function markTestIncomplete(string $message = '')
     {
         Assert::markTestIncomplete($message);
     }
@@ -1617,16 +1310,15 @@ trait InheritedAsserts
     /**
      * Mark the test as skipped.
      */
-    protected function markTestSkipped(string $message = ''): never
+    protected function markTestSkipped(string $message = '')
     {
         Assert::markTestSkipped($message);
     }
 
     /**
      * @see https://github.com/sebastianbergmann/phpunit/blob/9.6/src/Framework/Constraint/Object/ClassHasStaticAttribute.php
-     * @param class-string $className
      */
-    private static function hasStaticAttribute(string $attributeName, string $className): bool
+    private static function hasStaticAttribute(string $attributeName, string $className)
     {
         try {
             $class = new \ReflectionClass($className);

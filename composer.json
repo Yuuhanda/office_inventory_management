@@ -35,7 +35,7 @@
         "symfony/polyfill-intl-idn": "^1.38.1",
         "guzzlehttp/psr7": "^2.12.5",
         "symfony/mailer": "^7.4.12",
-        "psy/psysh": "^0.11.22",
+        "psy/psysh": "^0.11.23",
         "phpunit/phpunit": "^10.5.62"
 
     },

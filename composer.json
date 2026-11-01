@@ -30,7 +30,7 @@
         "yiisoft/yii2-httpclient": "^2.0",
         "guzzlehttp/guzzle": "^7.9",
         "symfony/mime": "^7.2",
-        "symfony/dom-crawler": "^7.4.12",
+        "symfony/dom-crawler": "^8.1.10",
         "symfony/yaml": "^7.4.12",
         "symfony/polyfill-intl-idn": "^1.38.1",
         "guzzlehttp/psr7": "^2.12.5",
